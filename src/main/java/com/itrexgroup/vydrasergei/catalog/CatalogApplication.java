@@ -1,4 +1,4 @@
-package itrexgroup.vydrasergei.catalog;
+package com.itrexgroup.vydrasergei.catalog;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
