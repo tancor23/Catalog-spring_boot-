@@ -13,7 +13,7 @@ public class CatalogApplication extends SpringBootServletInitializer {
         return application.sources(CatalogApplication.class);
     }
 
-    public static void main(String[] args) throws Exception {
+    public static void main(String[] args){
         SpringApplication.run(CatalogApplication.class, args);
     }
 
