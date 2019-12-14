@@ -1,46 +1,37 @@
 package com.itrexgroup.skeleton.mapper;
 
-import com.itrexgroup.skeleton.domain.BookEntity;
 import com.itrexgroup.skeleton.domain.UserEntity;
-import com.itrexgroup.skeleton.dto.SimpleBookDto;
 import com.itrexgroup.skeleton.dto.UserDto;
-
-import java.util.List;
-import java.util.stream.Collectors;
 
 public class UserMapper implements AbstractMapper<UserDto, UserEntity> {
 
     @Override
     public UserDto mapToDto(UserEntity entity) {
-        List<BookEntity> bookEntityList = entity.getBooks();
-        List<SimpleBookDto> simpleBookDtoList = bookEntityList.stream().map(this::mapToSimpleBookDto).collect(Collectors.toList());
         return UserDto.builder()
                 .id(entity.getId())
+                .login(entity.getLogin())
+                .password(entity.getPassword())
+                .email(entity.getEmail())
                 .firstName(entity.getFirstName())
                 .lastName(entity.getLastName())
+                .role(entity.getRole())
+                .status(entity.getStatus())
                 .createdAt(entity.getCreatedAt())
-                .simpleBookDtoList(simpleBookDtoList)
                 .build();
-    }
-
-    private SimpleBookDto mapToSimpleBookDto(BookEntity bookEntity) {
-        return new SimpleBookDto(bookEntity.getId(), bookEntity.getName(), bookEntity.getAuthor());
     }
 
     @Override
     public UserEntity mapToEntity(UserDto dto) {
-        List<SimpleBookDto> simpleBookDtoList = dto.getSimpleBookDtoList();
-        List<BookEntity> bookEntityList = simpleBookDtoList.stream().map(this::mapToBookDto).collect(Collectors.toList());
         return UserEntity.builder()
                 .id(dto.getId())
+                .login(dto.getLogin())
+                .password(dto.getPassword())
+                .email(dto.getEmail())
                 .firstName(dto.getFirstName())
                 .lastName(dto.getLastName())
+                .role(dto.getRole())
+                .status(dto.getStatus())
                 .createdAt(dto.getCreatedAt())
-                .books(bookEntityList)
                 .build();
-    }
-
-    private BookEntity mapToBookDto(SimpleBookDto simpleBookDto) {
-        return new BookEntity(simpleBookDto.getId(), simpleBookDto.getName(), simpleBookDto.getAuthor());
     }
 }

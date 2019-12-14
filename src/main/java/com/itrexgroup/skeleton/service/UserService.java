@@ -10,7 +10,7 @@ public interface UserService {
 
     List<UserEntity> getAllUserEntity();
 
-    UserEntity getUserEntityByID(Long id);
+    UserEntity readById(Long id);
 
     void delete(UserEntity userEntity);
 

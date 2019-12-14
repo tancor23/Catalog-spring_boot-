@@ -5,7 +5,6 @@ import org.hibernate.annotations.CreationTimestamp;
 
 import javax.persistence.*;
 import java.util.Date;
-import java.util.List;
 
 @Getter
 @Setter
@@ -15,7 +14,7 @@ import java.util.List;
 @ToString
 @Entity
 @Builder
-@Table(name = "users", schema = "catalog_mysql")
+@Table(name = "users", schema = "spring_rest_skeleton")
 public class UserEntity {
 
     @Id
@@ -24,34 +23,36 @@ public class UserEntity {
     private long id = -1;
 
     @Basic
+    @Column(name = "login", nullable = false, unique = true)
+    private String login;
+
+    @Basic
+    @Column(name = "password", nullable = false)
+    private String password;
+
+    @Basic
+    @Column(name = "email", nullable = false)
+    private String email;
+
+    @Basic
     @Column(name = "first_name", nullable = false)
     private String firstName;
 
     @Basic
-    @Column(name = "last_name", nullable = false)
+    @Column(name = "last_name")
     private String lastName;
+
+    @Basic
+    @Column(name = "role", nullable = false, columnDefinition = "DEFAULT 'user'")
+    private String role;
+
+    @Basic
+    @Column(name = "status", nullable = false, columnDefinition = "DEFAULT 'inactive'")
+    private String status;
 
     @CreationTimestamp
     @Temporal(TemporalType.TIMESTAMP)
     @Column(name = "created_at")
     private Date createdAt;
-
-    @ManyToMany(fetch = FetchType.LAZY)
-    @JoinTable(name = "user_book",
-            joinColumns = {@JoinColumn(name = "user_id")},
-            inverseJoinColumns = {@JoinColumn(name = "book_id")})
-    private List<BookEntity> books;
-
-
-    public UserEntity(String firstName, String lastName) {
-        this.firstName = firstName;
-        this.lastName = lastName;
-    }
-
-    public UserEntity(Long id, String firstName, String lastName) {
-        this.id = id;
-        this.firstName = firstName;
-        this.lastName = lastName;
-    }
 }
 

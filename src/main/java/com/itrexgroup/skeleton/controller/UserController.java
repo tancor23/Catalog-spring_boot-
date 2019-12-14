@@ -1,66 +1,68 @@
 package com.itrexgroup.skeleton.controller;
 
-import com.itrexgroup.skeleton.service.UserService;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.itrexgroup.skeleton.domain.UserEntity;
+import com.itrexgroup.skeleton.dto.UserDto;
+import com.itrexgroup.skeleton.exception.NotFoundException;
+import com.itrexgroup.skeleton.mapper.AbstractMapper;
+import com.itrexgroup.skeleton.mapper.UserMapper;
+import com.itrexgroup.skeleton.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Controller;
-import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.servlet.ModelAndView;
+import org.springframework.web.bind.annotation.*;
 
-@Controller
-@RequestMapping(value = "/user", produces = "application/json;charset=UTF-8")
+import javax.validation.Valid;
+import java.util.List;
+
+@RestController
+@RequestMapping(value = "user", produces = "application/json;charset=UTF-8")
 public class UserController {
 
     private final UserService userService;
+    private final AbstractMapper<UserDto, UserEntity> userMapper = new UserMapper();
+    private final ObjectMapper objectMapper = new ObjectMapper();
 
     @Autowired
     public UserController(UserService userService) {
         this.userService = userService;
     }
 
-    @RequestMapping(value = "/create", method = RequestMethod.GET)
-    public String goToCreateUserPage() {
-        return "user/create";
+    @GetMapping
+    public List<UserDto> list() {
+        List<UserEntity> userEntities = userService.getAllUserEntity();
+        return userMapper.mapAllToDto(userEntities);
     }
 
-    @Transactional
-    @RequestMapping(value = "/delete", method = RequestMethod.POST)
-    public String deleteUserPostMethod(@RequestParam String userId) {
-        long id = Long.parseLong(userId);
-        userService.delete(userService.getUserEntityByID(id));
-        return "redirect:/main";
+    @GetMapping("{id}")
+    public UserDto readById(@PathVariable(value = "id") Long userId) {
+        UserEntity userEntity = userService.readById(userId);
+        return userMapper.mapToDto(userEntity);
     }
 
-    @RequestMapping(value = "/update", method = RequestMethod.GET)
-    public ModelAndView updateUserPagePostMethod(@RequestParam String userId, @RequestParam String firstName, @RequestParam String lastName) {
-        ModelAndView modelAndView = new ModelAndView();
-        modelAndView.setViewName("user/update");
-        modelAndView.addObject("userId", userId);
-        modelAndView.addObject("firstName", firstName);
-        modelAndView.addObject("lastName", lastName);
-        return modelAndView;
+    @PostMapping
+    public List<UserDto> create(@RequestBody String userData) {
+        try {
+            UserDto userDto = objectMapper.readValue(userData, UserDto.class);
+            UserEntity userEntity = userMapper.mapToEntity(userDto);
+            userService.create(userEntity);
+        } catch (JsonProcessingException e) {
+            throw new NotFoundException();
+        }
+        return list();
     }
 
-    @Transactional
-    @RequestMapping(value = "/update", method = RequestMethod.POST)
-    public String updateUserPostMethod(@RequestParam String userId, @RequestParam String firstName, @RequestParam String lastName) {
-        long id = Long.parseLong(userId);
-        UserEntity userEntity = userService.getUserEntityByID(id);
-        userEntity.setFirstName(firstName);
-        userEntity.setLastName(lastName);
+    @PutMapping("{id}")
+    public UserDto update(@PathVariable(value = "id") Long userId,
+                          @Valid @RequestBody UserDto userDto) {
+        UserEntity userEntity = userMapper.mapToEntity(userDto);
+        userEntity.setId(userId);
         userService.update(userEntity);
-        return "redirect:/main";
+        return userMapper.mapToDto(userEntity);
     }
 
-    @Transactional
-    @RequestMapping(value = "/create", method = RequestMethod.POST)
-    public String updateBookPostMethod(@RequestParam String firstName, @RequestParam String lastName) {
-        UserEntity userEntity = new UserEntity(firstName, lastName);
-        userService.create(userEntity);
-        return "redirect:/main";
+    @DeleteMapping("{id}")
+    public void delete(@PathVariable(value = "id") Long userId) {
+        userService.delete(userService.readById(userId));
     }
 }
 
