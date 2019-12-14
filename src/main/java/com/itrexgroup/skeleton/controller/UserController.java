@@ -1,10 +1,8 @@
 package com.itrexgroup.skeleton.controller;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.itrexgroup.skeleton.domain.UserEntity;
 import com.itrexgroup.skeleton.dto.UserDto;
-import com.itrexgroup.skeleton.exception.NotFoundException;
 import com.itrexgroup.skeleton.mapper.AbstractMapper;
 import com.itrexgroup.skeleton.mapper.UserMapper;
 import com.itrexgroup.skeleton.service.UserService;
@@ -40,20 +38,14 @@ public class UserController {
     }
 
     @PostMapping
-    public List<UserDto> create(@RequestBody String userData) {
-        try {
-            UserDto userDto = objectMapper.readValue(userData, UserDto.class);
-            UserEntity userEntity = userMapper.mapToEntity(userDto);
-            userService.create(userEntity);
-        } catch (JsonProcessingException e) {
-            throw new NotFoundException();
-        }
+    public List<UserDto> create(@Valid @RequestBody UserDto userDto) {
+        UserEntity userEntity = userMapper.mapToEntity(userDto);
+        userService.create(userEntity);
         return list();
     }
 
     @PutMapping("{id}")
-    public UserDto update(@PathVariable(value = "id") Long userId,
-                          @Valid @RequestBody UserDto userDto) {
+    public UserDto update(@PathVariable(value = "id") Long userId, @Valid @RequestBody UserDto userDto) {
         UserEntity userEntity = userMapper.mapToEntity(userDto);
         userEntity.setId(userId);
         userService.update(userEntity);
