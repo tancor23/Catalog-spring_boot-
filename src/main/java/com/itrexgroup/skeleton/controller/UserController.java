@@ -1,7 +1,6 @@
 package com.itrexgroup.skeleton.controller;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.itrexgroup.skeleton.domain.UserEntity;
+import com.itrexgroup.skeleton.entity.UserEntity;
 import com.itrexgroup.skeleton.dto.UserDto;
 import com.itrexgroup.skeleton.mapper.AbstractMapper;
 import com.itrexgroup.skeleton.mapper.UserMapper;
@@ -13,12 +12,11 @@ import javax.validation.Valid;
 import java.util.List;
 
 @RestController
-@RequestMapping(value = "user", produces = "application/json;charset=UTF-8")
+@RequestMapping(value = "users", produces = "application/json;charset=UTF-8")
 public class UserController {
 
     private final UserService userService;
     private final AbstractMapper<UserDto, UserEntity> userMapper = new UserMapper();
-    private final ObjectMapper objectMapper = new ObjectMapper();
 
     @Autowired
     public UserController(UserService userService) {
@@ -31,20 +29,20 @@ public class UserController {
         return userMapper.mapAllToDto(userEntities);
     }
 
-    @GetMapping("{id}")
+    @GetMapping("/{id}")
     public UserDto readById(@PathVariable(value = "id") Long userId) {
         UserEntity userEntity = userService.readById(userId);
         return userMapper.mapToDto(userEntity);
     }
 
     @PostMapping
-    public List<UserDto> create(@Valid @RequestBody UserDto userDto) {
+    public UserDto create(@Valid @RequestBody UserDto userDto) {
         UserEntity userEntity = userMapper.mapToEntity(userDto);
-        userService.create(userEntity);
-        return list();
+        UserEntity newUserEntity = userService.create(userEntity);
+        return userMapper.mapToDto(newUserEntity);
     }
 
-    @PutMapping("{id}")
+    @PutMapping("/{id}")
     public UserDto update(@PathVariable(value = "id") Long userId, @Valid @RequestBody UserDto userDto) {
         UserEntity userEntity = userMapper.mapToEntity(userDto);
         userEntity.setId(userId);
@@ -52,9 +50,10 @@ public class UserController {
         return userMapper.mapToDto(userEntity);
     }
 
-    @DeleteMapping("{id}")
+    @DeleteMapping("/{id}")
     public void delete(@PathVariable(value = "id") Long userId) {
-        userService.delete(userService.readById(userId));
+        UserEntity userEntity = userService.readById(userId);
+        userService.delete(userEntity);
     }
 }
 

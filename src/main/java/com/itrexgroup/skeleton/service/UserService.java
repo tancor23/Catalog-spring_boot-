@@ -1,6 +1,6 @@
 package com.itrexgroup.skeleton.service;
 
-import com.itrexgroup.skeleton.domain.UserEntity;
+import com.itrexgroup.skeleton.entity.UserEntity;
 
 import java.util.List;
 

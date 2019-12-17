@@ -29,9 +29,9 @@ public class UserDto {
 
     private String lastName;
 
-    private String role;
+    private String role = "user";
 
-    private String status;
+    private String status = "inactive";
 
     private Date createdAt;
 

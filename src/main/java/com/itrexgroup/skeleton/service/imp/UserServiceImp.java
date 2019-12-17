@@ -1,15 +1,14 @@
 package com.itrexgroup.skeleton.service.imp;
 
-import com.itrexgroup.skeleton.domain.UserEntity;
+import com.itrexgroup.skeleton.entity.UserEntity;
 import com.itrexgroup.skeleton.exception.NotFoundException;
-import com.itrexgroup.skeleton.repository.UserDao;
+import com.itrexgroup.skeleton.dao.UserDao;
 import com.itrexgroup.skeleton.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
-import javax.transaction.Transactional;
 import java.util.List;
-import java.util.Optional;
 
 @Service
 public class UserServiceImp implements UserService {
@@ -21,7 +20,7 @@ public class UserServiceImp implements UserService {
         this.userDao = userDao;
     }
 
-    //@Transactional
+    @Transactional
     @Override
     public UserEntity create(UserEntity userEntity) {
         return userDao.save(userEntity);

@@ -1,6 +1,6 @@
-package com.itrexgroup.skeleton.repository;
+package com.itrexgroup.skeleton.dao;
 
-import com.itrexgroup.skeleton.domain.UserEntity;
+import com.itrexgroup.skeleton.entity.UserEntity;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 public interface UserDao extends JpaRepository<UserEntity, Long> {

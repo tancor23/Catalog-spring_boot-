@@ -1,4 +1,4 @@
-package com.itrexgroup.skeleton.domain;
+package com.itrexgroup.skeleton.entity;
 
 import lombok.*;
 import org.hibernate.annotations.CreationTimestamp;
@@ -23,31 +23,31 @@ public class UserEntity {
     private long id = -1;
 
     @Basic
-    @Column(name = "login", nullable = false, unique = true)
+    @Column(name = "login", length = 50, nullable = false, unique = true)
     private String login;
 
     @Basic
-    @Column(name = "password", nullable = false)
+    @Column(name = "password", length = 100, nullable = false)
     private String password;
 
     @Basic
-    @Column(name = "email", nullable = false)
+    @Column(name = "email", length = 100, nullable = false)
     private String email;
 
     @Basic
-    @Column(name = "first_name", nullable = false)
+    @Column(name = "first_name", length = 100, nullable = false)
     private String firstName;
 
     @Basic
-    @Column(name = "last_name")
+    @Column(name = "last_name", length = 100)
     private String lastName;
 
     @Basic
-    @Column(name = "role", nullable = false, columnDefinition = "DEFAULT 'user'")
+    @Column(name = "role", length = 100, nullable = false, columnDefinition = "DEFAULT 'user'")
     private String role;
 
     @Basic
-    @Column(name = "status", nullable = false, columnDefinition = "DEFAULT 'inactive'")
+    @Column(name = "status", length = 100, nullable = false, columnDefinition = "DEFAULT 'inactive'")
     private String status;
 
     @CreationTimestamp
