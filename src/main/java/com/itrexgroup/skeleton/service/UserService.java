@@ -14,6 +14,6 @@ public interface UserService {
 
     void delete(UserEntity userEntity);
 
-    void update(UserEntity userEntity);
+    UserEntity update(UserEntity userEntity);
 
 }

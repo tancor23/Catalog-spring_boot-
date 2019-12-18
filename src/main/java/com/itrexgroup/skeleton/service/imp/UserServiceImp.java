@@ -1,7 +1,7 @@
 package com.itrexgroup.skeleton.service.imp;
 
 import com.itrexgroup.skeleton.entity.UserEntity;
-import com.itrexgroup.skeleton.exception.NotFoundException;
+import com.itrexgroup.skeleton.exception.UserNotFoundException;
 import com.itrexgroup.skeleton.dao.UserDao;
 import com.itrexgroup.skeleton.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -33,7 +33,7 @@ public class UserServiceImp implements UserService {
 
     @Override
     public UserEntity readById(Long id) {
-        return userDao.findById(id).orElseThrow(NotFoundException::new);
+        return userDao.findById(id).orElseThrow(() -> new UserNotFoundException(id));
     }
 
     @Transactional
@@ -45,7 +45,8 @@ public class UserServiceImp implements UserService {
 
     @Transactional
     @Override
-    public void update(UserEntity userEntity) {
+    public UserEntity update(UserEntity userEntity) {
         userDao.save(userEntity);
+        return userEntity;
     }
 }

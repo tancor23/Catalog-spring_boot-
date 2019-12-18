@@ -1,5 +1,6 @@
 package com.itrexgroup.skeleton.entity;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.*;
 import org.hibernate.annotations.CreationTimestamp;
 
@@ -52,6 +53,7 @@ public class UserEntity {
 
     @CreationTimestamp
     @Temporal(TemporalType.TIMESTAMP)
+    //@JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd  HH:mm:ss")
     @Column(name = "created_at")
     private Date createdAt;
 }
