@@ -13,4 +13,9 @@ public class CatalogExceptionHandler extends ResponseEntityExceptionHandler {
     protected ResponseEntity<UserResponse> handlerNotFoundException(UserNotFoundException userNotFoundException){
         return new ResponseEntity<>(new UserResponse(userNotFoundException.getMessage()), HttpStatus.NOT_FOUND);
     }
+
+    @ExceptionHandler(UserNotUniqueLoginException.class)
+    protected ResponseEntity<UserResponse> handlerNotUniqueLoginException(UserNotUniqueLoginException userNotUniqueLoginException){
+        return new ResponseEntity<>(new UserResponse(userNotUniqueLoginException.getMessage()), HttpStatus.CONFLICT);
+    }
 }
