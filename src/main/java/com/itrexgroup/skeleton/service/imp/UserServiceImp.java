@@ -1,9 +1,10 @@
 package com.itrexgroup.skeleton.service.imp;
 
+import com.itrexgroup.skeleton.dao.UserDao;
 import com.itrexgroup.skeleton.entity.UserEntity;
 import com.itrexgroup.skeleton.exception.UserNotFoundException;
-import com.itrexgroup.skeleton.dao.UserDao;
 import com.itrexgroup.skeleton.exception.UserNotUniqueLoginException;
+import com.itrexgroup.skeleton.exception.UserWasNotChangedException;
 import com.itrexgroup.skeleton.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -25,7 +26,7 @@ public class UserServiceImp implements UserService {
     @Override
     public UserEntity create(UserEntity userEntity) {
         UserEntity userEntityByLogin = userDao.findUserEntityByLogin(userEntity.getLogin());
-        if(userEntityByLogin!=null){
+        if (userEntityByLogin != null) {
             throw new UserNotUniqueLoginException(userEntityByLogin.getLogin());
         }
         return userDao.save(userEntity);
@@ -52,8 +53,12 @@ public class UserServiceImp implements UserService {
     @Override
     public UserEntity update(UserEntity userEntity) {
         UserEntity userEntityByLogin = userDao.findUserEntityByLogin(userEntity.getLogin());
-        if(userEntityByLogin!=null){
-            throw new UserNotUniqueLoginException(userEntityByLogin.getLogin());
+        if (userEntityByLogin != null) {
+            if (userEntity.getId() == userEntityByLogin.getId()) {
+                throw new UserWasNotChangedException(userEntity.getId(), userEntity.getLogin());
+            } else {
+                throw new UserNotUniqueLoginException(userEntityByLogin.getLogin());
+            }
         }
         userDao.save(userEntity);
         return userEntity;
