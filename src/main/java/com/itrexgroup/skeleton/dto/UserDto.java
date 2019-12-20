@@ -1,5 +1,7 @@
 package com.itrexgroup.skeleton.dto;
 
+import com.itrexgroup.skeleton.to.Role;
+import com.itrexgroup.skeleton.to.Status;
 import lombok.*;
 
 import javax.validation.constraints.NotNull;
@@ -29,9 +31,11 @@ public class UserDto {
 
     private String lastName;
 
-    private String role = "user";
+    @NotNull
+    private String role = Role.USER.getValue();
 
-    private String status = "inactive";
+    @NotNull
+    private String status = Status.INACTIVE.getValue();
 
     private Date createdAt;
 

@@ -10,5 +10,5 @@ import org.springframework.stereotype.Repository;
 public interface UserDao extends JpaRepository<UserEntity, Long> {
 
     @Query("select e from UserEntity e where e.login =:login")
-    UserEntity findUserEntityByLogin(@Param("login") String login);
+    UserEntity findByLogin(@Param("login") String login);
 }

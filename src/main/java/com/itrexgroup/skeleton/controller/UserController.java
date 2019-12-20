@@ -9,6 +9,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
+import java.util.Base64;
 import java.util.List;
 
 @RestController
@@ -38,7 +39,9 @@ public class UserController {
     @PostMapping
     public UserDto create(@Valid @RequestBody UserDto userDto) {
         UserEntity userEntity = userMapper.mapToEntity(userDto);
+        userEntity.setPassword(Base64.getEncoder().encodeToString(userEntity.getPassword().getBytes()));
         UserEntity newUserEntity = userService.create(userEntity);
+
         return userMapper.mapToDto(newUserEntity);
     }
 

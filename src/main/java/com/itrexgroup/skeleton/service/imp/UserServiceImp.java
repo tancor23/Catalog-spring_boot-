@@ -2,15 +2,16 @@ package com.itrexgroup.skeleton.service.imp;
 
 import com.itrexgroup.skeleton.dao.UserDao;
 import com.itrexgroup.skeleton.entity.UserEntity;
-import com.itrexgroup.skeleton.exception.UserNotFoundException;
-import com.itrexgroup.skeleton.exception.UserNotUniqueLoginException;
-import com.itrexgroup.skeleton.exception.UserWasNotChangedException;
+import com.itrexgroup.skeleton.exception.*;
 import com.itrexgroup.skeleton.service.UserService;
+import com.itrexgroup.skeleton.to.Role;
+import com.itrexgroup.skeleton.to.Status;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+
+import static com.itrexgroup.skeleton.to.Status.STOPPED;
 
 @Service
 public class UserServiceImp implements UserService {
@@ -22,13 +23,14 @@ public class UserServiceImp implements UserService {
         this.userDao = userDao;
     }
 
-    @Transactional
     @Override
     public UserEntity create(UserEntity userEntity) {
-        UserEntity userEntityByLogin = userDao.findUserEntityByLogin(userEntity.getLogin());
+        UserEntity userEntityByLogin = userDao.findByLogin(userEntity.getLogin());
         if (userEntityByLogin != null) {
             throw new UserNotUniqueLoginException(userEntityByLogin.getLogin());
         }
+        userEntity.setStatus(Status.INACTIVE.getValue());
+        userEntity.setRole(Role.USER.getValue());
         return userDao.save(userEntity);
     }
 
@@ -39,20 +41,23 @@ public class UserServiceImp implements UserService {
 
     @Override
     public UserEntity readById(Long id) {
-        return userDao.findById(id).orElseThrow(() -> new UserNotFoundException(id));
+        return getUserEntityById(id);
     }
 
-    @Transactional
     @Override
     public void delete(UserEntity userEntity) {
-        userEntity.setStatus("stopped");
+        UserEntity newUserEntity = getUserEntityById(userEntity.getId());
+        if (newUserEntity.getStatus().equals(STOPPED.getValue())) {
+            throw new UserIsAlreadyDeletedException(newUserEntity.getId(), newUserEntity.getLogin());
+        }
+        userEntity.setStatus(STOPPED.getValue());
         userDao.save(userEntity);
     }
 
-    @Transactional
     @Override
     public UserEntity update(UserEntity userEntity) {
-        UserEntity userEntityByLogin = userDao.findUserEntityByLogin(userEntity.getLogin());
+        getUserEntityById(userEntity.getId());
+        UserEntity userEntityByLogin = userDao.findByLogin(userEntity.getLogin());
         if (userEntityByLogin != null) {
             if (userEntity.getId() == userEntityByLogin.getId()) {
                 throw new UserWasNotChangedException(userEntity.getId(), userEntity.getLogin());
@@ -60,7 +65,40 @@ public class UserServiceImp implements UserService {
                 throw new UserNotUniqueLoginException(userEntityByLogin.getLogin());
             }
         }
+        if (!isValidStatus(userEntity.getStatus())) {
+            throw new UserNotValidStatusError(userEntity.getId(), userEntity.getLogin(), userEntity.getStatus());
+        }
+
+        if (!isValidRole(userEntity.getRole())) {
+            throw new UserNotValidRoleError(userEntity.getId(), userEntity.getLogin(), userEntity.getRole());
+        }
         userDao.save(userEntity);
         return userEntity;
+    }
+
+    private UserEntity getUserEntityById(Long id) {
+        return userDao.findById(id).orElseThrow(() -> new UserNotFoundException(id));
+    }
+
+    private boolean isValidStatus(String newStatus) {
+        if (!newStatus.isEmpty()) {
+            for (Status status : Status.values()) {
+                if (status.getValue().equals(newStatus)) {
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
+
+    private boolean isValidRole(String newRole) {
+        if (!newRole.isEmpty()) {
+            for (Role role : Role.values()) {
+                if (role.getValue().equals(newRole)) {
+                    return true;
+                }
+            }
+        }
+        return false;
     }
 }

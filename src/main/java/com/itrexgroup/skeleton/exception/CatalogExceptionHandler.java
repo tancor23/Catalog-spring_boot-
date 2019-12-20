@@ -23,4 +23,19 @@ public class CatalogExceptionHandler extends ResponseEntityExceptionHandler {
     protected ResponseEntity<UserResponse> handlerWasNotChangedException(UserWasNotChangedException userWasNotChangedException) {
         return new ResponseEntity<>(new UserResponse(userWasNotChangedException.getMessage()), HttpStatus.UNPROCESSABLE_ENTITY);
     }
+
+    @ExceptionHandler(UserIsAlreadyDeletedException.class)
+    protected ResponseEntity<UserResponse> handlerIsAlreadyDeletedException(UserIsAlreadyDeletedException userIsAlreadyDeletedException) {
+        return new ResponseEntity<>(new UserResponse(userIsAlreadyDeletedException.getMessage()), HttpStatus.UNPROCESSABLE_ENTITY);
+    }
+
+    @ExceptionHandler(UserNotValidStatusError.class)
+    protected ResponseEntity<UserResponse> handlerNotValidStatusException(UserNotValidStatusError userNotValidStatusError) {
+        return new ResponseEntity<>(new UserResponse(userNotValidStatusError.getMessage()), HttpStatus.UNPROCESSABLE_ENTITY);
+    }
+
+    @ExceptionHandler(UserNotValidRoleError.class)
+    protected ResponseEntity<UserResponse> handlerNotValidRoleException(UserNotValidRoleError userNotValidRoleError) {
+        return new ResponseEntity<>(new UserResponse(userNotValidRoleError.getMessage()), HttpStatus.UNPROCESSABLE_ENTITY);
+    }
 }
