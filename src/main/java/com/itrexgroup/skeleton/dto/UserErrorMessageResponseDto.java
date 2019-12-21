@@ -1,4 +1,4 @@
-package com.itrexgroup.skeleton.exception;
+package com.itrexgroup.skeleton.dto;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -7,6 +7,6 @@ import lombok.NoArgsConstructor;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class UserResponse {
+public class UserErrorMessageResponseDto {
     private String message;
 }

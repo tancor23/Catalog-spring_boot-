@@ -12,7 +12,6 @@ import org.springframework.stereotype.Service;
 import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
-import java.util.Arrays;
 import java.util.List;
 
 import static com.itrexgroup.skeleton.to.Status.STOPPED;
@@ -29,13 +28,15 @@ public class UserServiceImp implements UserService {
 
     @Override
     public UserEntity create(UserEntity userEntity) {
-        UserEntity userEntityByLogin = userDao.findByLogin(userEntity.getLogin());
-        if (userEntityByLogin != null) {
-            throw new UserNotUniqueLoginException(userEntityByLogin.getLogin());
+        List<UserEntity> usersEntityByLogin = userDao.findByLogin(userEntity.getLogin());
+        for (UserEntity userEntityByLogin : usersEntityByLogin) {
+            if (userEntityByLogin != null && !userEntityByLogin.getStatus().equals(STOPPED.getValue())) {
+                throw new UserNotUniqueLoginException(userEntityByLogin.getLogin());
+            }
         }
         try {
             userEntity.setPassword(new String(getPasswordSha256(userEntity.getPassword())));
-        }catch (Exception e){
+        } catch (Exception e) {
             throw new IAmTeapotException(userEntity.getLogin());
         }
         userEntity.setStatus(Status.INACTIVE.getValue());
@@ -66,12 +67,11 @@ public class UserServiceImp implements UserService {
     @Override
     public UserEntity update(UserEntity userEntity) {
         getUserEntityById(userEntity.getId());
-        UserEntity userEntityByLogin = userDao.findByLogin(userEntity.getLogin());
-        if (userEntityByLogin != null) {
-            if (userEntity.getId() == userEntityByLogin.getId()) {
-                throw new UserWasNotChangedException(userEntity.getId(), userEntity.getLogin());
-            } else {
+        List<UserEntity> usersEntityByLogin = userDao.findByLogin(userEntity.getLogin());
+        for (UserEntity userEntityByLogin : usersEntityByLogin) {
+            if (userEntityByLogin != null && !userEntityByLogin.getStatus().equals(STOPPED.getValue())) {
                 throw new UserNotUniqueLoginException(userEntityByLogin.getLogin());
+
             }
         }
         if (!isValidStatus(userEntity.getStatus())) {
@@ -83,7 +83,7 @@ public class UserServiceImp implements UserService {
         }
         try {
             userEntity.setPassword(new String(getPasswordSha256(userEntity.getPassword())));
-        }catch (Exception e){
+        } catch (Exception e) {
             throw new IAmTeapotException(userEntity.getLogin());
         }
         userDao.save(userEntity);
