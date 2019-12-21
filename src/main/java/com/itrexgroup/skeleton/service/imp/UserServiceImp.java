@@ -9,6 +9,10 @@ import com.itrexgroup.skeleton.to.Status;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.nio.charset.StandardCharsets;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
+import java.util.Arrays;
 import java.util.List;
 
 import static com.itrexgroup.skeleton.to.Status.STOPPED;
@@ -28,6 +32,11 @@ public class UserServiceImp implements UserService {
         UserEntity userEntityByLogin = userDao.findByLogin(userEntity.getLogin());
         if (userEntityByLogin != null) {
             throw new UserNotUniqueLoginException(userEntityByLogin.getLogin());
+        }
+        try {
+            userEntity.setPassword(new String(getPasswordSha256(userEntity.getPassword())));
+        }catch (Exception e){
+            throw new IAmTeapotException(userEntity.getLogin());
         }
         userEntity.setStatus(Status.INACTIVE.getValue());
         userEntity.setRole(Role.USER.getValue());
@@ -72,6 +81,11 @@ public class UserServiceImp implements UserService {
         if (!isValidRole(userEntity.getRole())) {
             throw new UserNotValidRoleError(userEntity.getId(), userEntity.getLogin(), userEntity.getRole());
         }
+        try {
+            userEntity.setPassword(new String(getPasswordSha256(userEntity.getPassword())));
+        }catch (Exception e){
+            throw new IAmTeapotException(userEntity.getLogin());
+        }
         userDao.save(userEntity);
         return userEntity;
     }
@@ -100,5 +114,10 @@ public class UserServiceImp implements UserService {
             }
         }
         return false;
+    }
+
+    private byte[] getPasswordSha256(String password) throws NoSuchAlgorithmException {
+        MessageDigest digest = MessageDigest.getInstance("SHA-256");
+        return digest.digest(password.getBytes(StandardCharsets.UTF_8));
     }
 }

@@ -38,4 +38,9 @@ public class CatalogExceptionHandler extends ResponseEntityExceptionHandler {
     protected ResponseEntity<UserResponse> handlerNotValidRoleException(UserNotValidRoleError userNotValidRoleError) {
         return new ResponseEntity<>(new UserResponse(userNotValidRoleError.getMessage()), HttpStatus.UNPROCESSABLE_ENTITY);
     }
+
+    @ExceptionHandler(IAmTeapotException.class)
+    protected ResponseEntity<UserResponse> handlerIAmTeapotException(IAmTeapotException iAmTeapotException) {
+        return new ResponseEntity<>(new UserResponse(iAmTeapotException.getMessage()), HttpStatus.I_AM_A_TEAPOT);
+    }
 }

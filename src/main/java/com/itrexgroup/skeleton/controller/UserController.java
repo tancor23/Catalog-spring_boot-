@@ -39,7 +39,6 @@ public class UserController {
     @PostMapping
     public UserDto create(@Valid @RequestBody UserDto userDto) {
         UserEntity userEntity = userMapper.mapToEntity(userDto);
-        userEntity.setPassword(Base64.getEncoder().encodeToString(userEntity.getPassword().getBytes()));
         UserEntity newUserEntity = userService.create(userEntity);
 
         return userMapper.mapToDto(newUserEntity);
