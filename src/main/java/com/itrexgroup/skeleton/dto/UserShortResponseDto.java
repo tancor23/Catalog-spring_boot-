@@ -2,17 +2,18 @@ package com.itrexgroup.skeleton.dto;
 
 import com.itrexgroup.skeleton.to.Role;
 import com.itrexgroup.skeleton.to.Status;
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 import javax.validation.constraints.NotNull;
 import java.util.Date;
 
-@Data
-@NoArgsConstructor
+@Getter
+@Setter
 @AllArgsConstructor
-public class UserGoodMessageResponseDto {
+@NoArgsConstructor
+@ToString
+@Builder
+public class UserShortResponseDto {
 
     private long id;
 

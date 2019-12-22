@@ -3,7 +3,7 @@ package com.itrexgroup.skeleton.mapper;
 import com.itrexgroup.skeleton.entity.UserEntity;
 import com.itrexgroup.skeleton.dto.UserDto;
 
-public class UserMapper implements AbstractMapper<UserDto, UserEntity> {
+public class UserEntityDtoMapper implements AbstractMapper<UserDto, UserEntity> {
 
     @Override
     public UserDto mapToDto(UserEntity entity) {

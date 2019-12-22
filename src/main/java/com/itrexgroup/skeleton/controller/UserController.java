@@ -1,15 +1,19 @@
 package com.itrexgroup.skeleton.controller;
 
-import com.itrexgroup.skeleton.entity.UserEntity;
 import com.itrexgroup.skeleton.dto.UserDto;
+import com.itrexgroup.skeleton.dto.UserMessageResponseDto;
+import com.itrexgroup.skeleton.dto.UserShortResponseDto;
+import com.itrexgroup.skeleton.entity.UserEntity;
 import com.itrexgroup.skeleton.mapper.AbstractMapper;
-import com.itrexgroup.skeleton.mapper.UserMapper;
+import com.itrexgroup.skeleton.mapper.UserEntityDtoMapper;
+import com.itrexgroup.skeleton.mapper.UserEntityGoodResponseMapper;
 import com.itrexgroup.skeleton.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
-import java.util.Base64;
 import java.util.List;
 
 @RestController
@@ -17,7 +21,8 @@ import java.util.List;
 public class UserController {
 
     private final UserService userService;
-    private final AbstractMapper<UserDto, UserEntity> userMapper = new UserMapper();
+    private final AbstractMapper<UserDto, UserEntity> userEntityDtoMapper = new UserEntityDtoMapper();
+    private final AbstractMapper<UserShortResponseDto, UserEntity> userEntityGoodMessageDtoMapper = new UserEntityGoodResponseMapper();
 
     @Autowired
     public UserController(UserService userService) {
@@ -25,37 +30,39 @@ public class UserController {
     }
 
     @GetMapping
-    public List<UserDto> list() {
+    public ResponseEntity<List<UserShortResponseDto>> list() {
         List<UserEntity> userEntities = userService.getAllUserEntity();
-        return userMapper.mapAllToDto(userEntities);
+        return new ResponseEntity<>(userEntityGoodMessageDtoMapper.mapAllToDto(userEntities), HttpStatus.OK);
     }
 
     @GetMapping("/{id}")
-    public UserDto readById(@PathVariable(value = "id") Long userId) {
+    public ResponseEntity<UserShortResponseDto> readById(@PathVariable(value = "id") Long userId) {
         UserEntity userEntity = userService.readById(userId);
-        return userMapper.mapToDto(userEntity);
+        return new ResponseEntity<>(userEntityGoodMessageDtoMapper.mapToDto(userEntity), HttpStatus.OK);
     }
 
     @PostMapping
-    public UserDto create(@Valid @RequestBody UserDto userDto) {
-        UserEntity userEntity = userMapper.mapToEntity(userDto);
+    public ResponseEntity<UserDto> create(@Valid @RequestBody UserDto userDto) {
+        UserEntity userEntity = userEntityDtoMapper.mapToEntity(userDto);
         UserEntity newUserEntity = userService.create(userEntity);
 
-        return userMapper.mapToDto(newUserEntity);
+        return new ResponseEntity<>(userEntityDtoMapper.mapToDto(newUserEntity), HttpStatus.CREATED);
     }
 
     @PutMapping("/{id}")
-    public UserDto update(@PathVariable(value = "id") Long userId, @Valid @RequestBody UserDto userDto) {
-        UserEntity userEntity = userMapper.mapToEntity(userDto);
+    public ResponseEntity<UserDto> update(@PathVariable(value = "id") Long userId, @Valid @RequestBody UserDto userDto) {
+        UserEntity userEntity = userEntityDtoMapper.mapToEntity(userDto);
         userEntity.setId(userId);
         userService.update(userEntity);
-        return userMapper.mapToDto(userEntity);
+        return new ResponseEntity<>(userEntityDtoMapper.mapToDto(userEntity), HttpStatus.OK);
     }
 
     @DeleteMapping("/{id}")
-    public void delete(@PathVariable(value = "id") Long userId) {
+    public ResponseEntity<UserMessageResponseDto> delete(@PathVariable(value = "id") Long userId) {
         UserEntity userEntity = userService.readById(userId);
         userService.delete(userEntity);
+        return new ResponseEntity<>(new UserMessageResponseDto("User by login '" + userEntity.getLogin() + "' and ID '"
+                + userEntity.getId() + "' was deleted SUCCESSFULLY"), HttpStatus.OK);
     }
 }
 
