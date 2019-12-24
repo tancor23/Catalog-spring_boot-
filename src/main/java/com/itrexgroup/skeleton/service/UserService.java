@@ -12,7 +12,7 @@ public interface UserService {
 
     UserEntity readById(Long id);
 
-    void delete(UserEntity userEntity);
+    void delete(Long id);
 
     UserEntity update(UserEntity userEntity);
 

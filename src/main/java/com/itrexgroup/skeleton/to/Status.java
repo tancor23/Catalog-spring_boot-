@@ -8,11 +8,11 @@ public enum Status {
 
     private String status;
 
-    Status(String status){
+    Status(String status) {
         this.status = status;
     }
 
-    public String getValue(){
+    public String getValue() {
         return status;
     }
 }

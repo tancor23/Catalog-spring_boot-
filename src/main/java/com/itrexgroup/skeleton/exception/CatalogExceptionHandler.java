@@ -2,8 +2,8 @@ package com.itrexgroup.skeleton.exception;
 
 import com.itrexgroup.skeleton.dto.UserMessageResponseDto;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ExceptionHandler;
+import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExceptionHandler;
 
@@ -11,37 +11,50 @@ import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExcep
 public class CatalogExceptionHandler extends ResponseEntityExceptionHandler {
 
     @ExceptionHandler(UserNotFoundException.class)
-    protected ResponseEntity<UserMessageResponseDto> handlerNotFoundException(UserNotFoundException userNotFoundException) {
-        return new ResponseEntity<>(new UserMessageResponseDto(userNotFoundException.getMessage()), HttpStatus.NOT_FOUND);
+    @ResponseStatus(code = HttpStatus.NOT_FOUND)
+    protected UserMessageResponseDto handlerNotFoundException(UserNotFoundException userNotFoundException) {
+        return new UserMessageResponseDto(userNotFoundException.getMessage());
     }
 
     @ExceptionHandler(UserNotUniqueLoginException.class)
-    protected ResponseEntity<UserMessageResponseDto> handlerNotUniqueLoginException(UserNotUniqueLoginException userNotUniqueLoginException) {
-        return new ResponseEntity<>(new UserMessageResponseDto(userNotUniqueLoginException.getMessage()), HttpStatus.CONFLICT);
+    @ResponseStatus(code = HttpStatus.CONFLICT)
+    protected UserMessageResponseDto handlerNotUniqueLoginException(UserNotUniqueLoginException userNotUniqueLoginException) {
+        return new UserMessageResponseDto(userNotUniqueLoginException.getMessage());
     }
 
     @ExceptionHandler(UserWasNotChangedException.class)
-    protected ResponseEntity<UserMessageResponseDto> handlerWasNotChangedException(UserWasNotChangedException userWasNotChangedException) {
-        return new ResponseEntity<>(new UserMessageResponseDto(userWasNotChangedException.getMessage()), HttpStatus.UNPROCESSABLE_ENTITY);
+    @ResponseStatus(code = HttpStatus.UNPROCESSABLE_ENTITY)
+    protected UserMessageResponseDto handlerWasNotChangedException(UserWasNotChangedException userWasNotChangedException) {
+        return new UserMessageResponseDto(userWasNotChangedException.getMessage());
     }
 
     @ExceptionHandler(UserIsAlreadyDeletedException.class)
-    protected ResponseEntity<UserMessageResponseDto> handlerIsAlreadyDeletedException(UserIsAlreadyDeletedException userIsAlreadyDeletedException) {
-        return new ResponseEntity<>(new UserMessageResponseDto(userIsAlreadyDeletedException.getMessage()), HttpStatus.UNPROCESSABLE_ENTITY);
+    @ResponseStatus(code = HttpStatus.UNPROCESSABLE_ENTITY)
+    protected UserMessageResponseDto handlerIsAlreadyDeletedException(UserIsAlreadyDeletedException userIsAlreadyDeletedException) {
+        return new UserMessageResponseDto(userIsAlreadyDeletedException.getMessage());
     }
 
-    @ExceptionHandler(UserNotValidStatusError.class)
-    protected ResponseEntity<UserMessageResponseDto> handlerNotValidStatusException(UserNotValidStatusError userNotValidStatusError) {
-        return new ResponseEntity<>(new UserMessageResponseDto(userNotValidStatusError.getMessage()), HttpStatus.UNPROCESSABLE_ENTITY);
+    @ExceptionHandler(UserNotValidStatusException.class)
+    @ResponseStatus(code = HttpStatus.UNPROCESSABLE_ENTITY)
+    protected UserMessageResponseDto handlerNotValidStatusException(UserNotValidStatusException userNotValidStatusException) {
+        return new UserMessageResponseDto(userNotValidStatusException.getMessage());
     }
 
-    @ExceptionHandler(UserNotValidRoleError.class)
-    protected ResponseEntity<UserMessageResponseDto> handlerNotValidRoleException(UserNotValidRoleError userNotValidRoleError) {
-        return new ResponseEntity<>(new UserMessageResponseDto(userNotValidRoleError.getMessage()), HttpStatus.UNPROCESSABLE_ENTITY);
+    @ExceptionHandler(UserNotValidRoleException.class)
+    @ResponseStatus(code = HttpStatus.UNPROCESSABLE_ENTITY)
+    protected UserMessageResponseDto handlerNotValidRoleException(UserNotValidRoleException userNotValidRoleException) {
+        return new UserMessageResponseDto(userNotValidRoleException.getMessage());
     }
 
-    @ExceptionHandler(IAmTeapotException.class)
-    protected ResponseEntity<UserMessageResponseDto> handlerIAmTeapotException(IAmTeapotException iAmTeapotException) {
-        return new ResponseEntity<>(new UserMessageResponseDto(iAmTeapotException.getMessage()), HttpStatus.I_AM_A_TEAPOT);
+    @ExceptionHandler(UserNotValidPasswordException.class)
+    @ResponseStatus(code = HttpStatus.UNPROCESSABLE_ENTITY)
+    protected UserMessageResponseDto handlerIAmTeapotException(UserNotValidPasswordException userNotValidPasswordException) {
+        return new UserMessageResponseDto(userNotValidPasswordException.getMessage());
+    }
+
+    @ExceptionHandler(UserLoginIsNullException.class)
+    @ResponseStatus(code = HttpStatus.UNPROCESSABLE_ENTITY)
+    protected UserMessageResponseDto handlerIAmTeapotException(UserLoginIsNullException userLoginIsNullException) {
+        return new UserMessageResponseDto(userLoginIsNullException.getMessage());
     }
 }

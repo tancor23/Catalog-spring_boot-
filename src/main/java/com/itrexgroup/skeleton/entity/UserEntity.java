@@ -1,10 +1,24 @@
 package com.itrexgroup.skeleton.entity;
 
-import com.fasterxml.jackson.annotation.JsonFormat;
-import lombok.*;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.EqualsAndHashCode;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
+import lombok.ToString;
 import org.hibernate.annotations.CreationTimestamp;
 
-import javax.persistence.*;
+import javax.persistence.Basic;
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.Index;
+import javax.persistence.Table;
+import javax.persistence.Temporal;
+import javax.persistence.TemporalType;
 import java.util.Date;
 
 @Getter
@@ -35,6 +49,10 @@ public class UserEntity {
     @Basic
     @Column(name = "email", length = 100, nullable = false)
     private String email;
+
+    @Basic
+    @Column(name = "is_confirmed_email", nullable = false)
+    private boolean isConfirmedEmail;
 
     @Basic
     @Column(name = "first_name", length = 100, nullable = false)

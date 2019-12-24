@@ -2,7 +2,14 @@ package com.itrexgroup.skeleton.service.imp;
 
 import com.itrexgroup.skeleton.dao.UserDao;
 import com.itrexgroup.skeleton.entity.UserEntity;
-import com.itrexgroup.skeleton.exception.*;
+import com.itrexgroup.skeleton.exception.UserIsAlreadyDeletedException;
+import com.itrexgroup.skeleton.exception.UserLoginIsNullException;
+import com.itrexgroup.skeleton.exception.UserLoginWasChangedException;
+import com.itrexgroup.skeleton.exception.UserNotFoundException;
+import com.itrexgroup.skeleton.exception.UserNotUniqueLoginException;
+import com.itrexgroup.skeleton.exception.UserNotValidPasswordException;
+import com.itrexgroup.skeleton.exception.UserNotValidRoleException;
+import com.itrexgroup.skeleton.exception.UserNotValidStatusException;
 import com.itrexgroup.skeleton.service.UserService;
 import com.itrexgroup.skeleton.to.Role;
 import com.itrexgroup.skeleton.to.Status;
@@ -36,8 +43,8 @@ public class UserServiceImp implements UserService {
         }
         try {
             userEntity.setPassword(new String(getPasswordSha256(userEntity.getPassword())));
-        } catch (Exception e) {
-            throw new IAmTeapotException(userEntity.getLogin());
+        } catch (NoSuchAlgorithmException e) {
+            throw new UserNotValidPasswordException(userEntity.getLogin());
         }
         userEntity.setStatus(Status.INACTIVE.getValue());
         userEntity.setRole(Role.USER.getValue());
@@ -55,10 +62,10 @@ public class UserServiceImp implements UserService {
     }
 
     @Override
-    public void delete(UserEntity userEntity) {
-        UserEntity newUserEntity = getUserEntityById(userEntity.getId());
-        if (newUserEntity.getStatus().equals(STOPPED.getValue())) {
-            throw new UserIsAlreadyDeletedException(newUserEntity.getId(), newUserEntity.getLogin());
+    public void delete(Long userId) {
+        UserEntity userEntity = getUserEntityById(userId);
+        if (userEntity.getStatus().equals(STOPPED.getValue())) {
+            throw new UserIsAlreadyDeletedException(userEntity.getId(), userEntity.getLogin());
         }
         userEntity.setStatus(STOPPED.getValue());
         userDao.save(userEntity);
@@ -66,7 +73,13 @@ public class UserServiceImp implements UserService {
 
     @Override
     public UserEntity update(UserEntity userEntity) {
-        getUserEntityById(userEntity.getId());
+        UserEntity userEntityFromDb = getUserEntityById(userEntity.getId());
+        if (userEntity.getLogin() == null){
+            throw new UserLoginIsNullException(userEntity.getId());
+        }
+        if (!userEntity.getLogin().equals(userEntityFromDb.getLogin())) {
+            throw new UserLoginWasChangedException(userEntity.getId(), userEntityFromDb.getLogin());
+        }
         List<UserEntity> usersEntityByLogin = userDao.findByLogin(userEntity.getLogin());
         for (UserEntity userEntityByLogin : usersEntityByLogin) {
             if (userEntityByLogin != null && !userEntityByLogin.getStatus().equals(STOPPED.getValue())) {
@@ -74,17 +87,19 @@ public class UserServiceImp implements UserService {
 
             }
         }
+
+        // todo
         if (!isValidStatus(userEntity.getStatus())) {
-            throw new UserNotValidStatusError(userEntity.getId(), userEntity.getLogin(), userEntity.getStatus());
+            throw new UserNotValidStatusException(userEntity.getId(), userEntity.getLogin(), userEntity.getStatus());
         }
 
         if (!isValidRole(userEntity.getRole())) {
-            throw new UserNotValidRoleError(userEntity.getId(), userEntity.getLogin(), userEntity.getRole());
+            throw new UserNotValidRoleException(userEntity.getId(), userEntity.getLogin(), userEntity.getRole());
         }
         try {
             userEntity.setPassword(new String(getPasswordSha256(userEntity.getPassword())));
-        } catch (Exception e) {
-            throw new IAmTeapotException(userEntity.getLogin());
+        } catch (NoSuchAlgorithmException e) {
+            throw new UserNotValidPasswordException(userEntity.getLogin());
         }
         userDao.save(userEntity);
         return userEntity;

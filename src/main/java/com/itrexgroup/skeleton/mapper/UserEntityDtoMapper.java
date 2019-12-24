@@ -1,7 +1,7 @@
 package com.itrexgroup.skeleton.mapper;
 
-import com.itrexgroup.skeleton.entity.UserEntity;
 import com.itrexgroup.skeleton.dto.UserDto;
+import com.itrexgroup.skeleton.entity.UserEntity;
 
 public class UserEntityDtoMapper implements AbstractMapper<UserDto, UserEntity> {
 

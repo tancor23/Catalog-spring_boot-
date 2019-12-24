@@ -2,10 +2,12 @@ package com.itrexgroup.skeleton.dto;
 
 import com.itrexgroup.skeleton.to.Role;
 import com.itrexgroup.skeleton.to.Status;
-import lombok.*;
-
-import javax.validation.constraints.NotNull;
-import java.util.Date;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
+import lombok.ToString;
 
 @Getter
 @Setter
