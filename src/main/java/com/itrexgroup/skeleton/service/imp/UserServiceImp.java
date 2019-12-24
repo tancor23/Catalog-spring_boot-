@@ -4,6 +4,7 @@ import com.itrexgroup.skeleton.config.bean.PasswordSha256Bean;
 import com.itrexgroup.skeleton.dao.UserDao;
 import com.itrexgroup.skeleton.entity.UserEntity;
 import com.itrexgroup.skeleton.exception.UserEmailConfirmWasChangedException;
+import com.itrexgroup.skeleton.exception.UserEmailIsEmptyException;
 import com.itrexgroup.skeleton.exception.UserEmailWasChangedException;
 import com.itrexgroup.skeleton.exception.UserFirstNameIsEmptyException;
 import com.itrexgroup.skeleton.exception.UserIsAlreadyDeletedException;
@@ -11,6 +12,7 @@ import com.itrexgroup.skeleton.exception.UserLoginIsEmptyException;
 import com.itrexgroup.skeleton.exception.UserLoginWasChangedException;
 import com.itrexgroup.skeleton.exception.UserNotFoundException;
 import com.itrexgroup.skeleton.exception.UserNotUniqueLoginException;
+import com.itrexgroup.skeleton.exception.UserPasswordIsEmptyException;
 import com.itrexgroup.skeleton.exception.UserRoleWasChangedException;
 import com.itrexgroup.skeleton.exception.UserStatusWasChangedException;
 import com.itrexgroup.skeleton.exception.UserWasNotChangedException;
@@ -38,9 +40,10 @@ public class UserServiceImp implements UserService {
 
     @Override
     public UserEntity create(UserEntity userEntity) {
+        validateUserEntity(userEntity);
         List<UserEntity> usersEntityByLogin = userDao.findByLogin(userEntity.getLogin());
         for (UserEntity userEntityByLogin : usersEntityByLogin) {
-            if (userEntityByLogin != null && !userEntityByLogin.getStatus().equals(STOPPED.getValue())) {
+            if (!userEntityByLogin.getStatus().equals(STOPPED.getValue())) {
                 throw new UserNotUniqueLoginException(userEntityByLogin.getLogin());
             }
         }
@@ -72,9 +75,7 @@ public class UserServiceImp implements UserService {
 
     @Override
     public UserEntity update(UserEntity userEntity) {
-        if (userEntity.getLogin().isEmpty()) {
-            throw new UserLoginIsEmptyException(userEntity.getId());
-        }
+        validateUserEntity(userEntity);
         UserEntity userEntityFromDb = getUserEntityById(userEntity.getId());
         if (!userEntity.getLogin().equals(userEntityFromDb.getLogin())) {
             throw new UserLoginWasChangedException(userEntityFromDb.getId(), userEntityFromDb.getLogin());
@@ -84,9 +85,6 @@ public class UserServiceImp implements UserService {
         }
         if (Boolean.compare(userEntity.isConfirmedEmail(), userEntityFromDb.isConfirmedEmail()) == 0) {
             throw new UserEmailConfirmWasChangedException(userEntityFromDb.getId());
-        }
-        if (userEntity.getFirstName().isEmpty()) {
-            throw new UserFirstNameIsEmptyException(userEntityFromDb.getId());
         }
         if (userEntity.getRole().equals(userEntityFromDb.getRole())) {
             throw new UserRoleWasChangedException(userEntityFromDb.getId());
@@ -116,6 +114,21 @@ public class UserServiceImp implements UserService {
         }
         userDao.save(userEntity);
         return userEntity;
+    }
+
+    private void validateUserEntity(UserEntity userEntity){
+        if (userEntity.getLogin().isEmpty()) {
+            throw new UserLoginIsEmptyException(userEntity.getId());
+        }
+        if(userEntity.getEmail().isEmpty()){
+            throw new UserEmailIsEmptyException();
+        }
+        if(userEntity.getFirstName().isEmpty()){
+            throw new UserFirstNameIsEmptyException();
+        }
+        if(userEntity.getPassword().isEmpty()){
+            throw new UserPasswordIsEmptyException();
+        }
     }
 
     private UserEntity getUserEntityById(Long id) {

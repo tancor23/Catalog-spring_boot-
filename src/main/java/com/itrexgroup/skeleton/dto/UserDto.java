@@ -32,6 +32,9 @@ public class UserDto {
     private String email;
 
     @NotNull
+    boolean isConfirmedEmail = false;
+
+    @NotNull
     private String firstName;
 
     private String lastName;
