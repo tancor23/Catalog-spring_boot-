@@ -52,9 +52,9 @@ public class CatalogExceptionHandler extends ResponseEntityExceptionHandler {
         return new UserMessageResponseDto(userNotValidPasswordException.getMessage());
     }
 
-    @ExceptionHandler(UserLoginIsNullException.class)
+    @ExceptionHandler(UserLoginIsEmptyException.class)
     @ResponseStatus(code = HttpStatus.UNPROCESSABLE_ENTITY)
-    protected UserMessageResponseDto handlerIAmTeapotException(UserLoginIsNullException userLoginIsNullException) {
-        return new UserMessageResponseDto(userLoginIsNullException.getMessage());
+    protected UserMessageResponseDto handlerIAmTeapotException(UserLoginIsEmptyException userLoginIsEmptyException) {
+        return new UserMessageResponseDto(userLoginIsEmptyException.getMessage());
     }
 }

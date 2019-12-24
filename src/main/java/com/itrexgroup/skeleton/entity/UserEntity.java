@@ -29,7 +29,6 @@ import java.util.Date;
 @ToString
 @Entity
 @Builder
-//@Table(name = "users", schema = "spring_rest_skeleton", uniqueConstraints=@UniqueConstraint(columnNames={"login","status"}))
 @Table(name = "users", schema = "spring_rest_skeleton", indexes = {@Index(columnList = "login, status", name = "lsindex")})
 public class UserEntity {
 
